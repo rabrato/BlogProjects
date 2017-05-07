@@ -15,7 +15,7 @@ namespace IoCTesting
             _container = new DI_Container(new TrackedLifetimeManagerFactory());
             _container.RegisterDependencies();
 
-            ResolutionTracker.ResetTracking();
+            ResolutionTracker.Instance.ResetTracking();
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace IoCTesting
         {
             IMovie movie = _container.Resolve<IMovie>(Language.English.ToString());
             Assert.IsType<Movie>(movie);
-            Assert.Equal(1, ResolutionTracker.GetResolutionCount<EnglishAudio>());
+            Assert.Equal(1, ResolutionTracker.Instance.GetResolutionCount<EnglishAudio>());
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace IoCTesting
         {
             IMovie movie = _container.Resolve<IMovie>(Language.Spanish.ToString());
             Assert.IsType<Movie>(movie);
-            Assert.Equal(1, ResolutionTracker.GetResolutionCount<SpanishAudio>());
+            Assert.Equal(1, ResolutionTracker.Instance.GetResolutionCount<SpanishAudio>());
         }
     }
 }

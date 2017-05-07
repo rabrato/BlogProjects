@@ -6,7 +6,7 @@ namespace IoCTesting.IoC
     {
         public override void SetValue(object newValue)
         {
-            ResolutionTracker.TrackResolution(resolvedType: newValue.GetType());
+            ResolutionTracker.Instance.TrackResolution(resolvedType: newValue.GetType());
             base.SetValue(newValue);
         }
     }

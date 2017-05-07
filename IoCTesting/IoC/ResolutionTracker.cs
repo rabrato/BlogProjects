@@ -4,48 +4,82 @@ using System.Threading;
 
 namespace IoCTesting.IoC
 {
-    public static class ResolutionTracker
+    public class ResolutionTracker
     {
-        static Dictionary<Type, int> _resolvedTypesCounter = new Dictionary<Type, int>();
-        static readonly object _counterLock = new object();
+        #region Fields
 
-        public static void TrackResolution(Type resolvedType)
+        private Dictionary<Type, int> _resolvedTypesCounter = new Dictionary<Type, int>();
+
+        #endregion Fields
+
+        #region static Fields
+
+        private static volatile ResolutionTracker _instance;
+        private static object syncRoot = new Object();
+
+        #endregion static Fields
+
+        #region Static Properties
+
+        public static ResolutionTracker Instance
         {
-            lock (_counterLock)
+            get
             {
-                if (_resolvedTypesCounter.ContainsKey(resolvedType))
+                if (_instance == null)
                 {
-                    _resolvedTypesCounter[resolvedType]++;
+                    lock (syncRoot)
+                    {
+                        if (_instance == null)
+                            _instance = new ResolutionTracker();
+                    }
                 }
-                else
-                {
-                    _resolvedTypesCounter.Add(resolvedType, 1);
-                }
+
+                return _instance;
             }
         }
 
-        public static void ResetTracking()
+        #endregion Static Properties
+
+        #region Constructors
+
+        private ResolutionTracker()
         {
-            lock (_counterLock)
+        }
+
+        #endregion Constructors
+
+        #region Public Methods
+
+        public void TrackResolution(Type resolvedType)
+        {
+            if (_resolvedTypesCounter.ContainsKey(resolvedType))
             {
-                _resolvedTypesCounter = new Dictionary<Type, int>();
+                _resolvedTypesCounter[resolvedType]++;
+            }
+            else
+            {
+                _resolvedTypesCounter.Add(resolvedType, 1);
             }
         }
 
-        public static int GetResolutionCount<T>()
+        public void ResetTracking()
+        {
+            _resolvedTypesCounter = new Dictionary<Type, int>();
+        }
+
+        public int GetResolutionCount<T>()
         {
             Type resolvedType = typeof(T);
-            lock (_counterLock)
+            if (_resolvedTypesCounter.ContainsKey(resolvedType))
             {
-                if (_resolvedTypesCounter.ContainsKey(resolvedType))
-                {
-                    return _resolvedTypesCounter[resolvedType];
-                }
-                else
-                {
-                    return 0;
-                }
+                return _resolvedTypesCounter[resolvedType];
+            }
+            else
+            {
+                return 0;
             }
         }
+
+        #endregion Public Methods
     }
 }
