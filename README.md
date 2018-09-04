@@ -1,2 +1,2 @@
 # BlogProjects
-Projects with code of my personal blog (http://raulbravo.me/)
+Projects with code used in my blog posts (http://raulbravo.me/)
